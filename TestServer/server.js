@@ -51,9 +51,20 @@ io.on('connection', function (socket) {
       socket.emit('hi','more data');
     });
 
+      socket.on('parser_error#21', function (d) {
+      console.log("hi" + d);
+      socket.emit('parser_error#21_response','data that causes parser error');
+    });
+
   socket.on('d10000chars', function () {
     console.log('d10000chars');
     socket.emit('d10000chars', test_data.d10000chars);
+  });
+
+    //ogs test
+  socket.on('parser_error#21', function (d) {
+      console.log("ogs test" + d);
+      socket.emit('parser_error#21_response', test_data.ogstestchars);
   });
 
 

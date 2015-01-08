@@ -89,6 +89,38 @@ namespace SocketIoClientDotNet.Tests.ClientTests
             Assert.Equal("more data", obj);
         }
 
+        [Fact]
+        public void OgsMessageTest()
+        {
+            var log = LogManager.GetLogger(Global.CallerName());
+            log.Info("Start");
+            ManualResetEvent = new ManualResetEvent(false);
+            var events = new Queue<object>();
+
+            var options = CreateOptions();
+            var uri = CreateUri();
+            socket = IO.Socket(uri, options);
+            socket.On(Socket.EVENT_CONNECT, () =>
+            {
+                log.Info("EVENT_CONNECT");
+                socket.Emit("parser_error#21");
+            });
+
+            socket.On("parser_error#21_response",
+                (data) =>
+                {
+                    log.Info("EVENT_MESSAGE");
+                    events.Enqueue(data);
+                    ManualResetEvent.Set();
+                });
+
+            //socket.Open();
+            ManualResetEvent.WaitOne();
+            socket.Close();
+            var obj = events.Dequeue();
+            Assert.Equal("more data", obj);
+        }
+
 
         [Fact]
         public void ShouldNotConnectWhenAutoconnectOptionSetToFalse()
